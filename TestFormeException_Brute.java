@@ -2,12 +2,14 @@ import java.io.InputStreamReader; //pour la saisie d'une touche quelconque
 import java.io.IOException;
 import java.util.*;
 // Création des trois exceptions LARG_NEGATIF, LONG_NEGATIF et RAYON_NEGATIF
-
 class LARG_NEGATIF extends Exception{
     LARG_NEGATIF(){super();}
 }
 class LONG_NEGATIF extends Exception{
     LONG_NEGATIF(){super();}
+}
+class RAYON_NEGATIF extends Exception{
+    RAYON_NEGATIF(){super();}
 }
 interface DbServices{
     void addToDb();
@@ -29,6 +31,7 @@ class Rect extends Forme implements  DbServices{
         if (l<=0) throw new LONG_NEGATIF();
 
         this.l=l;  this.L=L;
+
     }
     //Implémentation de drow() dans Rect
     public void drow(){
@@ -63,7 +66,10 @@ class Rect extends Forme implements  DbServices{
 }
 class Cercle extends Forme  implements DbServices  {
     float r;
-    public Cercle(float r, int color){ super(color);}
+    public Cercle(float r, int color) throws RAYON_NEGATIF {
+         super(color);
+         if (r<=0) throw new RAYON_NEGATIF();
+    }
 
     //Implémentation de show() dans Cercle
     public void show(){
@@ -117,19 +123,23 @@ public class TestFormeException_Brute{
         //Charger la collection dessin avec 3 rectangles et 2 cercles
         System.out.println("\n1. CHARGEMENT DES FORMES : 3Rectangles + 2Cercles...\n");
         try {
-            dessin.add(new Rect(10,50,1));
-            dessin.add(new Cercle(10  ,3));
-            dessin.add(new Rect(70,20 ,4));
-            dessin.add(new Rect(100,50,1));
-            dessin.add(new Cercle(10  ,7));
+            dessin.add(new Rect(10, 50, 1));
+            dessin.add(new Rect(70, 20, 4));
+            dessin.add(new Rect(100, 50, 1));
         }
         catch (LARG_NEGATIF e){
-            System.out.println("ATT LARG. NEGATIF");
+            System.out.println("ATT LARG.NEGATIF");
         }
         catch (LONG_NEGATIF e){
-            System.out.println("ATT LARG. NEGATIF");
+            System.out.println("ATT LONG_NEGATIF");
         }
-
+        try {
+            dessin.add(new Cercle(10, 7));
+            dessin.add(new Cercle(10, 3));
+        }
+        catch (RAYON_NEGATIF e){
+            System.out.println("ATT RAYON_NEGATIF");
+        }
 
         // Lister les dimensions des formes de la collection <dessin>
         System.out.println("3. LISTE DES DIMENSIONS DES FORMES DU DESSIN");
@@ -146,9 +156,3 @@ public class TestFormeException_Brute{
         for (Forme F : dessin)F.drow();
     }
 }
-
-
-
-
-
-
